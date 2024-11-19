@@ -1,5 +1,7 @@
 package nextstep.app;
 
+import java.util.Set;
+import nextstep.oauth2.CsrfFilter;
 import nextstep.oauth2.OAuth2ClientProperties;
 import nextstep.oauth2.authentication.OAuth2LoginAuthenticationProvider;
 import nextstep.oauth2.registration.ClientRegistration;
@@ -81,6 +83,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain() {
         return new DefaultSecurityFilterChain(
                 List.of(
+                        new CsrfFilter(Set.of(new MvcRequestMatcher(HttpMethod.POST, "/login"))),
                         new SecurityContextHolderFilter(),
                         new UsernamePasswordAuthenticationFilter(authenticationManager()),
                         new BasicAuthenticationFilter(authenticationManager()),
