@@ -14,22 +14,17 @@ import nextstep.security.access.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class CsrfFilter extends OncePerRequestFilter {
-    private static final RequestMatcher requireCsrfProtectionMatcher = new DefaultRequiresCsrfMatcher();
+    public static RequestMatcher requireCsrfProtectionMatcher = new DefaultRequiresCsrfMatcher();
     private final CsrfTokenRepository tokenRepository = new CsrfTokenRepository();
     private final AccessDeniedHandler accessDeniedHandler = new AccessDeniedHandler();
-    private final Set<MvcRequestMatcher> ignoringRequestMatchers;
 
-    public CsrfFilter(Set<MvcRequestMatcher> ignoringRequestMatchers) {
-        this.ignoringRequestMatchers = ignoringRequestMatchers;
+    public void setRequireCsrfProtectionMatcher(RequestMatcher requestMatcher) {
+        requireCsrfProtectionMatcher = requestMatcher;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        if (ignoringRequestMatchers.stream().anyMatch(matcher -> matcher.matches(request))) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         CsrfToken csrfToken = this.tokenRepository.loadToken(request);
         boolean missingToken = (csrfToken == null);
