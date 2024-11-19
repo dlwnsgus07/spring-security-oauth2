@@ -17,6 +17,7 @@ import nextstep.security.access.hierarchicalroles.RoleHierarchy;
 import nextstep.security.access.hierarchicalroles.RoleHierarchyImpl;
 import nextstep.security.authentication.*;
 import nextstep.security.authorization.*;
+import nextstep.security.config.Customizer;
 import nextstep.security.config.DefaultSecurityFilterChain;
 import nextstep.security.config.DelegatingFilterProxy;
 import nextstep.security.config.FilterChainProxy;
@@ -56,12 +57,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain2(HttpSecurity http) {
         return http.csrf(c -> c.ignoredCsrfProtectionMatchers("/login"))
+                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 
     @Bean
-    public DelegatingFilterProxy delegatingFilterProxy() {
-        return new DelegatingFilterProxy(filterChainProxy(List.of(securityFilterChain2(new HttpSecurity()))));
+    public DelegatingFilterProxy delegatingFilterProxy(HttpSecurity httpSecurity) {
+        return new DelegatingFilterProxy(filterChainProxy(List.of(securityFilterChain2(httpSecurity))));
     }
 
     @Bean
